@@ -68,3 +68,31 @@ if __name__ == "__main__":
     env = CliffRunner()
     env.reset()
     env.render_text()
+
+# -------------- Testing --------------
+    # Test 1: walk the shortest path (hug the cliff edge): UP, 11x RIGHT, DOWN
+    plan = [UP] + [RIGHT] * 11 + [DOWN]
+    total = 0
+    for a in plan:
+        s, r, terminated, truncated, info = env.step(a)
+        total += r
+    print("edge path  -> return:", total, "| reached goal:", terminated)   # expect -13, True
+
+    # Test 2: step straight into lava from the start
+    env.reset()
+    s, r, terminated, truncated, info = env.step(RIGHT)
+    print("into lava  -> reward:", r, "| fell:", info["fell"], "| now at:", s)  # expect -100, True, (5, 0)
+
+    # Test 3: what does a RANDOM agent score? (baseline for RL agent)
+    returns, falls = [], []
+    for _ in range(200):
+        env.reset()
+        total, n_falls, done = 0, 0, False
+        while not done:
+            s, r, terminated, truncated, info = env.step(random.randrange(4))
+            total += r
+            n_falls += info["fell"]
+            done = terminated or truncated
+        returns.append(total)
+        falls.append(n_falls)
+    print(f"random agent -> avg return: {sum(returns)/len(returns):.0f}, avg lava falls/episode: {sum(falls)/len(falls):.1f}")
