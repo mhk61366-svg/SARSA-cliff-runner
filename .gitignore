@@ -1,2 +1,4 @@
 .venv/
 sarsa-cliff-lab-journal.md
+__pycache__/
+observations.txt

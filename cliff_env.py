@@ -12,13 +12,15 @@ class CliffRunner:
         self.lava_penalty = lava_penalty
         self.step_penalty = step_penalty
         self.max_steps = max_steps
-        self.start_state = (n_rows - 1, 0)
-        self.goal_state = (n_rows - 1, n_cols - 1)
+        self.start = (n_rows - 1, 0)
+        self.goal = (n_rows - 1, n_cols - 1)
+        self.start_state = self.start
+        self.goal_state = self.goal
         self.lava = {(n_rows - 1, c) for c in range(1, n_cols - 1)}
         self.reset()
 
     def reset(self):                    # Reset the environment to the initial state
-        self.pos = self.start_state
+        self.pos = self.start
         self.steps = 0
         return self.pos
 
@@ -35,10 +37,10 @@ class CliffRunner:
         terminated = False
 
         if self.pos in self.lava:           # check if the agent fell into lava
-            reward += self.lava_penalty     # Reward penalty for falling into lava
+            reward = self.lava_penalty      # Reward penalty for falling into lava
             fell = True
-            self.pos = self.start_state
-        elif self.pos == self.goal_state:
+            self.pos = self.start
+        elif self.pos == self.goal:
             terminated = True               # check if the agent reached the goal state
 
         truncated = (not terminated) and self.steps >= self.max_steps
@@ -52,9 +54,9 @@ class CliffRunner:
             for c in range(self.n_cols):
                 if (r, c) == self.pos:
                     line += "A "
-                elif (r, c) == self.start_state:
+                elif (r, c) == self.start:
                     line += "S "
-                elif (r, c) == self.goal_state:
+                elif (r, c) == self.goal:
                     line += "G "
                 elif (r, c) in self.lava:
                     line += "L "
